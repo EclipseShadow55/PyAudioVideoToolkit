@@ -1,16 +1,12 @@
-import queue
 from abc import ABCMeta, abstractmethod
-from enum import StrEnum
 from typing import Protocol
+from collections.abc import Iterable
 
 
-
-class Effect[OutType](Protocol, metaclass=ABCMeta):
+class Effect[OutType](Protocol):
     @abstractmethod
-    def __next__(self) -> OutType: ...
+    def __next__(self) -> OutType | StopIteration: ...
 
+class FixedLengthEffect[OutType](Effect[OutType]):
     @abstractmethod
-    def run_all(self) -> list[OutType]: ...
-
-class FixedLengthEffect(Effect, Protocol):
     def __len__(self) -> int: ...

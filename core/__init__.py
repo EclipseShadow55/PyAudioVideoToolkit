@@ -1,4 +1,4 @@
-from core import Effect, FixedLengthEffect
+from .core import Effect, FixedLengthEffect
 
 
 __all__ = [
