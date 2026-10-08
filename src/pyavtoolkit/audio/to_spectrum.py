@@ -36,15 +36,13 @@ class ResonatorToSpectrumEffect(ToSpectrumEffect):
     def __init__(self, audio: npt.NDArray[np.floating], sample_rate: int, bin_scaling: ScalingTypes.Scaling, framerate: int = 60):
         super().__init__(audio, sample_rate, bin_scaling, framerate)
 
-        continuous_frequencies = np.ascontiguousarray(np.array(self.frequencies, dtype=np.float32))
-        self.bank = ResonatorBank(continuous_frequencies, self.sample_rate)
+        self.bank = ResonatorBank(np.array(self.frequencies, dtype=np.float32), self.sample_rate)
 
         self.duration = self.samples.shape[0] / self.sample_rate
         self.chunks = np.floor(np.linspace(0, self.samples.shape[0], num=int(framerate * self.duration))).astype(np.int64)
 
-
     def __next__(self) -> npt.NDArray[np.float32]:
-        if self.index < self.chunks.shape[0] - 2:
+        if self.index > self.chunks.shape[0] - 2:
             raise StopIteration()
         self.index += 1
         self.bank.resonate(self.samples[self.chunks[self.index]:self.chunks[self.index + 1]], self.chunks[self.index + 1] - self.chunks[self.index])
@@ -58,6 +56,8 @@ class CQTToSpectrumEffect(ToSpectrumEffect):
 
     def __init__(self, audio: npt.NDArray[np.floating], sample_rate: int, bin_scaling: ScalingTypes.Scaling, framerate: int = 60):
         super().__init__(audio, sample_rate, bin_scaling, framerate)
+
+
 
     def __len__(self):
         return self.frame_count
