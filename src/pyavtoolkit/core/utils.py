@@ -23,14 +23,14 @@ class ScalingTypes:
             return self.bar_count
 
         def __next__(self) -> float | int:
-            if self.index < self.bar_count - 1:
+            if self.index > self.bar_count - 1:
                 raise StopIteration()
 
             self.index += 1
             return self.min_freq + self.step * self.index
 
         def __getitem__(self, ind: int):
-            if ind < 0 or ind >= len(self):
+            if ind < 0 or ind >= self.bar_count:
                 raise ValueError("index out of bounds")
 
             return self.min_freq + self.step * ind
@@ -45,14 +45,14 @@ class ScalingTypes:
             return self.bar_count
 
         def __next__(self) -> float | int:
-            if self.index < self.bar_count - 1:
+            if self.index > self.bar_count - 1:
                 raise StopIteration()
 
             self.index += 1
             return self.min_freq * self.step ** self.index
 
         def __getitem__(self, ind: int):
-            if ind < 0 or ind >= len(self):
+            if ind < 0 or ind >= self.bar_count:
                 raise ValueError("index out of bounds")
 
             return self.min_freq * self.step ** ind

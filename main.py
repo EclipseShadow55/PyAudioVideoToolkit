@@ -17,7 +17,6 @@ if __name__ == "__main__":
 
     processed_audio, frequency_bins, total_time = process_audio_file("test2.wav", bar_count=108, framerate=audio_framerate)
 
-
     smoothed_processed = normalize_heights(ballistic_smoothing(flatten(processed_audio, alpha=2/3), attack_time=0.005, decay_time=0.20, fps=audio_framerate))
 
 
