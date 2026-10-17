@@ -1,3 +1,4 @@
 resonators ~= 0.1.2
 librosa ~= 1.0
 moviepy ~= 2.2
+numpy
