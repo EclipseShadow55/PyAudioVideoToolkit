@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "pyavtoolkit"
+version = "0.1.0"
+description = "A lazy-evaluated audio and video processing toolkit with chainable effects."
+readme = "README.md"
+license = "Apache-2.0"
+packages = [{ include = "pyavtoolkit", from = "src"}]
+classifiers= [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+resonators = "~=0.1.2"
+librosa = "^1.0"
+moviepy = "^2.2.1"
+pillow = "^12.3"
+numpy = "^2.5"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]

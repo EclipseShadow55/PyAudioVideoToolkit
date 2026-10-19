@@ -5,7 +5,8 @@ from collections.abc import Iterator, Sequence
 import numpy as np
 import numpy.typing as npt
 
-from pyavtoolkit.core import FixedLengthEffect, Effect
+from pyavtoolkit.core import Effect, FixedLengthEffect, IndexableEffect
+from pyavtoolkit.core.utils import check_slice
 
 
 class ScalingTypes:
@@ -85,7 +86,7 @@ class ScalingTypes:
         def copy(self):
             return self.__class__(self.min_freq, self.max_freq, self.bar_count)
 
-class SequenceEffect[OutType](Iterator[OutType]):
+class SequenceEffect[OutType](IndexableEffect[OutType]):
     arr: Sequence[OutType]
     index: int
 
@@ -103,13 +104,16 @@ class SequenceEffect[OutType](Iterator[OutType]):
         self.index += 1
         return self.arr[self.index]
 
-    def __getitem__(self, ind: int):
-        if 0 > ind >= len(self.arr):
-            raise ValueError("index out of bounds")
+    def __getitem__(self, ind: int | slice) -> OutType | npt.NDArray[OutType]:
+        if isinstance(ind, int):
+            if 0 > ind >= len(self.arr):
+                raise ValueError("index out of bounds")
+        else:
+            check_slice(ind, len(self))
 
         return self[ind]
 
-class Np1DArrayEffect[OutType](Iterator[OutType]):
+class Np1DArrayEffect[OutType](IndexableEffect[OutType]):
     arr: npt.NDArray[OutType]
     index: int
 
@@ -130,14 +134,17 @@ class Np1DArrayEffect[OutType](Iterator[OutType]):
         self.index += 1
         return self.arr[self.index]
 
-    def __getitem__(self, ind: int):
-        if 0 > ind >= len(self.arr):
-            raise ValueError("index out of bounds")
+    def __getitem__(self, ind: int | slice) -> OutType | npt.NDArray[OutType]:
+        if isinstance(ind, int):
+            if 0 > ind >= len(self.arr):
+                raise ValueError("index out of bounds")
+        else:
+            check_slice(ind, len(self))
 
         return self[ind]
 
 
-class ChunkProducerEffect[OutType](Iterator[OutType]):
+class ChunkProducerEffect[OutType](FixedLengthEffect[OutType]):
     arr: npt.NDArray[OutType]
     num_chunks: int
 
@@ -150,7 +157,7 @@ class ChunkProducerEffect[OutType](Iterator[OutType]):
         return self.num_chunks
 
 
-class BasicDuplicatorEffect[OutType](Iterator[OutType]):
+class BasicDuplicatorEffect[OutType](FixedLengthEffect[OutType]):
     def __init__(self, base: FixedLengthEffect[OutType], num: int):
         self.base = base
         self.buffer = []
@@ -207,7 +214,7 @@ class OptimizedDuplicatorEffect[OutType](BasicDuplicatorEffect[OutType]):
             self.buffer.pop(0)
             self.shift += 1
 
-class DuplicatorClientEffect[OutType](Iterator[OutType]):
+class DuplicatorClientEffect[OutType](FixedLengthEffect[OutType]):
     def __init__(self, server: BasicDuplicatorEffect[OutType]):
         self.server = server
         self.index = -1

@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.typing as npt
-from collections.abc import Iterator, Sequence
-from pyavtoolkit.core import Effect, FixedLengthEffect
+from collections.abc import Iterator
+from pyavtoolkit.core.abc import FixedLengthEffect
 
 
 class FFTEffect(Iterator):

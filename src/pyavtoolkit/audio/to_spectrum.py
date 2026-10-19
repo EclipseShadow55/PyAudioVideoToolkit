@@ -4,13 +4,12 @@ from typing import Sequence
 import numpy as np
 import numpy.typing as npt
 from resonators import ResonatorBank
-from collections.abc import Iterator
 
-from pyavtoolkit.core import Effect
-from pyavtoolkit.utils import ScalingTypes, power_above
+from pyavtoolkit.core import Effect, FixedLengthEffect
+from pyavtoolkit.core.effects import ScalingTypes
 
-
-class ToSpectrumEffect(Iterator, ABC):
+# Refactor all using ChunkProducerEffect to make fully lazy
+class ToSpectrumEffect(FixedLengthEffect[np.floating], ABC):
     sample_rate: int
     framerate: int
     frequencies: list[float| int]
@@ -121,9 +120,9 @@ if __name__ == "__main__":
 
     sr = 48000
     ts = np.arange(0, 1, 1/sr)
-    audio1 = 3 * np.sin(ts * 55 * np.pi * 2, dtype=np.float64)
-    audio2 = 10 * np.sin(ts * 293 * np.pi * 2, dtype=np.float64)
-    audio3 = 2.5 * np.sin(ts * 220 * np.pi * 2, dtype=np.float64)
+    audio1 = 3 * np.sin(ts * 55 * np.pi * 2, dtype=np.float32)
+    audio2 = 10 * np.sin(ts * 293 * np.pi * 2, dtype=np.float32)
+    audio3 = 2.5 * np.sin(ts * 220 * np.pi * 2, dtype=np.float32)
 
     rts_effect = ResonatorToSpectrumEffect(audio1 + audio2 + audio3, sr, freq_scale, 60)
 
